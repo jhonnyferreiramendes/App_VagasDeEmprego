@@ -3,6 +3,7 @@ import 'package:vacancies_go/pages/cadastro.page.dart';
 import 'package:vacancies_go/pages/home.page.dart';
 import 'package:vacancies_go/utils/constantes.dart';
 import 'package:vacancies_go/repository/usuario.repository.dart';
+import 'package:vacancies_go/controllers/autenticacao.controller.dart';
 
 class LoginPage extends StatefulWidget {
   final String title;
@@ -77,23 +78,22 @@ class _LoginPageState extends State<LoginPage> {
                 height: 68,
                 child: ElevatedButton(
                   onPressed: () async {
-                    UsuarioRepository uR = UsuarioRepository();
+                    AutenticacaoController autenticadorController = AutenticacaoController();
 
-                    bool senhasidenticas =
-                        await uR.autenticarSenha(_passwordController.text);
-                    bool emailsidenticos =
-                        await uR.autenticarEmail(_emailController.text);
+                    bool dadosValidos = await autenticadorController.validarLogin(
+                      _emailController.text,
+                      _passwordController.text,
+                    );
 
-                    if (senhasidenticas && emailsidenticos) {
+                    if (dadosValidos) {
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomePage()),
+                        MaterialPageRoute(builder: (context) => const HomePage()),
                         ModalRoute.withName('/home'),
                       );
                     } else {
-                      print("FALHA NA AUTENTICAÇÃO DO USUÁRIO");
-                    }
+                      print("FALHA NA AUTENTICACAO");
+                    } 
                   },
                   style: ElevatedButton.styleFrom(primary: Colors.green),
                   child: const Text('ENTRAR'),

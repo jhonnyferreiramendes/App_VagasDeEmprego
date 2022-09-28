@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:vacancies_go/pages/login.page.dart';
 import 'package:vacancies_go/repository/usuario.repository.dart';
+import 'package:vacancies_go/controllers/home.controller.dart';
+import 'package:vacancies_go/models/usuario.model.dart';
+import 'dart:async';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -9,16 +12,23 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+
 class _HomePageState extends State<HomePage> {
-  String _nomeDoUsuario = "";
-  UsuarioRepository userRe = UsuarioRepository();
+  UsuarioModel? dadosDoUsuario;
+  
+  HomeController homeController = HomeController();
 
   carregarDadosDoUsuario() async {
-    String? nome = await userRe.retornarNomeUsuario();
-
+    UsuarioModel usuarioLocal = await homeController.popularUsuario();
     setState(() {
-      _nomeDoUsuario = nome!;
+      dadosDoUsuario = usuarioLocal;
     });
+  }
+
+  @override
+  void initState() {
+    carregarDadosDoUsuario();
+    super.initState();
   }
 
   @override
@@ -32,7 +42,7 @@ class _HomePageState extends State<HomePage> {
           colors: [Colors.blue, Colors.red],
         ))),
         title: Text(
-          "Bem Vindo ao VacanciesGo $_nomeDoUsuario",
+          "Bem Vindo ao VacanciesGo ${dadosDoUsuario?.nomeDeUsuario})",
           style: TextStyle(fontSize: 18),
         ),
         actions: [
@@ -58,10 +68,10 @@ class _HomePageState extends State<HomePage> {
           padding: EdgeInsets.zero,
           children: [
             UserAccountsDrawerHeader(
-              accountEmail: Text("igorkwan@gmail.com"),
-              accountName: Text("Ygor Kwan"),
+              accountEmail: Text("Email do usuário: ${dadosDoUsuario?.email}"),
+              accountName:  Text("Nome do usuário: ${dadosDoUsuario?.nomeDeUsuario}"),
               currentAccountPicture: CircleAvatar(
-                child: Text("YK"),
+              child: Text("***"),
               ),
             ),
             ListTile(

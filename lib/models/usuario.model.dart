@@ -6,6 +6,7 @@ class UsuarioModel {
   String? cidade;
   String? email;
   String? senha;
+  String? dadosDoUsuario;
 
   UsuarioModel({
     required this.nomeDeUsuario,
@@ -14,6 +15,13 @@ class UsuarioModel {
     required this.email,
     required this.senha,
   });
+
+  UsuarioModel.usuarioVazio();
+
+  UsuarioModel.fromMap(Map<String, dynamic> dados) {
+    email = dados['email'];
+    nomeDeUsuario = dados['nome'];
+  }
 
   Map<String, dynamic> toJson() {
     return {

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:vacancies_go/models/usuario.model.dart';
 import 'package:vacancies_go/repository/usuario.repository.dart';
+import 'package:vacancies_go/controllers/autenticacao.controller.dart';
 
 class CadastroPage extends StatefulWidget {
   const CadastroPage({Key? key}) : super(key: key);
@@ -24,12 +25,10 @@ class _CadastroPageState extends State<CadastroPage> {
     return Scaffold(
         appBar: AppBar(
           flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.blue,Colors.red],
-              )
-            )
-          ),
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+            colors: [Colors.blue, Colors.red],
+          ))),
           elevation: 0,
           title: const Text(
             "PAGINA DE CADASTRO",
@@ -52,7 +51,6 @@ class _CadastroPageState extends State<CadastroPage> {
                     controller: _nomeController,
                     decoration:
                         const InputDecoration(labelText: "Nome Completo"),
-                        
                   ),
                   //
                   TextFormField(
@@ -96,32 +94,47 @@ class _CadastroPageState extends State<CadastroPage> {
                   Padding(
                     padding: const EdgeInsets.only(top: 24),
                     child: ElevatedButton(
-                        onPressed: () async {
-                          if (_passwordController.text ==
-                              _passwordconfirmController.text) {
-                            UsuarioModel usuario = UsuarioModel(
-                              nomeDeUsuario: _nomeController.text,
-                              sexo: _sexoController.text,
-                              cidade: _cidadeController.text,
-                              email: _emailController.text,
-                              senha: _passwordController.text,
-                            );
+                      onPressed: () async {
+                        AutenticacaoController autenticadorController =
+                            AutenticacaoController();
 
-                            UsuarioRepository uR = UsuarioRepository();
+                        bool senhasIguais =
+                            autenticadorController.verificarSeAsSenhasSaoIguais(
+                          _passwordController.text,
+                          _passwordconfirmController.text,
+                        );
 
-                            await uR.salvarUsuario(usuario);
+                        bool emailValido = autenticadorController
+                            .validarEmail(_emailController.text);
+                        bool senhaValida = autenticadorController
+                            .validarSenha(_passwordController.text);
 
-                            Navigator.pop(context);
-                          }
-                        },
-                        
-                        child: Text("Cadastrar Dados"),
-                        style: ElevatedButton.styleFrom(
-                          fixedSize: Size(300, 40),
-                          primary: Colors.green
-                        )
-                        ),
-                  )
+                        if (senhasIguais && emailValido && senhaValida) {
+                          UsuarioModel usuario = UsuarioModel(
+                            nomeDeUsuario: _nomeController.text,
+                            email: _emailController.text,
+                            senha: _passwordController.text,
+                            sexo: _sexoController.text,
+                            cidade: _cidadeController.text,
+                          );
+                  
+
+                          await autenticadorController
+                              .cadastrarUsuario(usuario);
+
+                          Navigator.pop(context);
+                        } else {
+                          print("Senhas iguais $senhasIguais");
+                          print("Email valido $emailValido");
+                          print("Senha valida $senhaValida");
+                        }
+                      },
+                      child: Text("Cadastrar Dados"),
+                      style: ElevatedButton.styleFrom(
+                        fixedSize: Size(300, 40),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
